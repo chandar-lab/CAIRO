@@ -6,13 +6,9 @@ This is the official repository for [Why Don’t Prompt-Based Fairness Metrics C
 <img src="CAIRO.png" width="400">
 <p style="text-align: center;">  </p>
 </div>
-## Install
-```
-pip install -r requirements.txt
-```
 
 ## Usage
-Please follow the instructions at https://colab.research.google.com/drive/14ML5YSrB8TZck1fIpTs5QxXW0oX4b_DA?usp=sharing
+Please follow the instructions in our [tutorial](https://colab.research.google.com/drive/14ML5YSrB8TZck1fIpTs5QxXW0oX4b_DA?usp=sharing)
 
 ## Citation
 ```
