@@ -40,9 +40,9 @@ def parse_args():
         "--experiment",
         choices=[
             "compute_correlation",
-            "collect_csv_files",
+            "collect_all_paraphrasing_models",
         ],
-        default="collect_csv_files",
+        default="collect_all_paraphrasing_models",
         help="The experiment that we want to run",
     )                  
     parser.add_argument(
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")    
 
-    if args.experiment == "collect_csv_files":
+    if args.experiment == "collect_all_paraphrasing_models":
             df = pd.DataFrame()
             for prompting in args.prompting_list:   
                 csv_directory = (
@@ -78,7 +78,7 @@ if __name__ == "__main__":
                     csv_directory
                     + str(prompting)
                     + "_"
-                    + "everything_2.csv"
+                    + "everything_reproducibility_2.csv"
                 )
                 print(file_name)
                 if os.path.exists(file_name):
@@ -91,8 +91,8 @@ if __name__ == "__main__":
             df["Group"].replace({"nationality": "Nationality", "sexual_orientation": "Sexual-orientation", "gender_and_sex": "Gender", "religion": "Religion", "religious_ideology": "Religion", "race_ethnicity": "Race", "race": "Race","gender": "Gender"}, inplace=True)
             sns.set(font_scale = 1.5)
 
-            df=df[(df["Model"]==args.model_list[0].replace("/", "_"))& (df["Replacement"]==True) & (df["Paraphrasing model"]==args.paraphrasing_model) & (df["Group"]==args.group_list[0]) & (df["Split"]==args.split_list[0])].drop(['prompt list'], axis=1)
-
+            # df=df[(df["Model"]==args.model_list[0].replace("/", "_"))& (df["Replacement"]==True) & (df["Paraphrasing model"]==args.paraphrasing_model) & (df["Group"]==args.group_list[0]) & (df["Split"]==args.split_list[0])].drop(['prompt list'], axis=1)
+            df=df[(df["Model"]==args.model_list[0].replace("/", "_"))& (df["Replacement"]==True) & (df["Paraphrasing model"]==args.paraphrasing_model) & (df["Group"]==args.group_list[0]) & (df["Split"]==args.split_list[0])]
             print(df)
             df["BOLD bias"]=None
             df["Holistic bias"]=None
@@ -164,7 +164,7 @@ if __name__ == "__main__":
                 + str(args.group_list[0])
                 + "_"
                 + str(args.split_list[0])
-                + ".csv",
+                + "_reproducibility_2.csv",
                 index=False,
             ) 
 
@@ -184,7 +184,7 @@ if __name__ == "__main__":
                         ) 
                         file_name = (
                             csv_directory
-                            + str("collect_csv_files")
+                            + "collect_all_paraphrasing_models"
                             + "_"
                             + str(model.replace("/", "_"))
                             + "_"
@@ -193,7 +193,7 @@ if __name__ == "__main__":
                             + str(group)
                             + "_"
                             + str(split)
-                            + ".csv"
+                            + "_reproducibility_2.csv"
                         )
                         print(file_name)
                         if os.path.exists(file_name):
@@ -202,12 +202,12 @@ if __name__ == "__main__":
                             df_new=pd.concat([df_new, df_current], ignore_index=True)
 
 
-                df_new.to_csv(
-                    "./output/"
-                    + "all_models_6"
-                    + ".csv",
-                    index=False,
-                ) 
+        df_new.to_csv(
+            "./output/"
+            + "all_models_reproducibility_2"
+            + ".csv",
+            index=False,
+        ) 
 
         df_new_3 = pd.DataFrame()
         for num in df_new["Num prompts"].unique():
@@ -284,6 +284,6 @@ if __name__ == "__main__":
         df_new_3.to_csv(
             "./output/"
             + str(args.experiment)
-            + ".csv",
+            + "_reproducibility_2.csv",
             index=False,
         ) 
