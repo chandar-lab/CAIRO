@@ -2,6 +2,10 @@
 
 This is the official repository for [Why Don’t Prompt-Based Fairness Metrics Correlate?](https://arxiv.org/abs/2307.16704), accepted at ACL main 2024. We explain why fairness metrics don't correlate and propose CAIRO to make them correlate.
 
+<div style="text-align: center">
+<img src="CAIRO.png" width="400">
+<p style="text-align: center;">  </p>
+</div>
 ## Install
 ```
 pip install -r requirements.txt
