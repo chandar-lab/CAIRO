@@ -1,23 +1,16 @@
 import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 import os
 import torch
-import json
-import numpy as np
 from argparse import ArgumentParser
-import random
-from random import choices
 import time
-import random, seaborn as sns, matplotlib.pyplot as plt
 import warnings
 import math
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import warnings
 import math
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
 from scipy.stats import pearsonr
+import seaborn as sns
 # this file is used to collect the results from the different runs of the experiments and save them in a csv file
 
 def parse_args():
@@ -78,7 +71,7 @@ if __name__ == "__main__":
                     csv_directory
                     + str(prompting)
                     + "_"
-                    + "everything_reproducibility_2.csv"
+                    + "everything.csv"
                 )
                 print(file_name)
                 if os.path.exists(file_name):
@@ -164,7 +157,7 @@ if __name__ == "__main__":
                 + str(args.group_list[0])
                 + "_"
                 + str(args.split_list[0])
-                + "_reproducibility_2.csv",
+                + ".csv",
                 index=False,
             ) 
 
@@ -193,23 +186,25 @@ if __name__ == "__main__":
                             + str(group)
                             + "_"
                             + str(split)
-                            + "_reproducibility_2.csv"
+                            + ".csv"
                         )
                         print(file_name)
                         if os.path.exists(file_name):
-                            print("Adeene geet")
                             df_current = pd.read_csv(file_name,lineterminator='\n', error_bad_lines=False)  
                             df_new=pd.concat([df_new, df_current], ignore_index=True)
 
 
         df_new.to_csv(
             "./output/"
-            + "all_models_reproducibility_2"
+            + "all_models"
             + ".csv",
             index=False,
         ) 
 
-        df_new_3 = pd.DataFrame()
+        df_new=df_new.dropna()
+        df_new=df_new[df_new["Split"]=="valid"]
+        df_new=df_new[df_new["Replacement"]==True]
+        df_correlation = pd.DataFrame()
         for num in df_new["Num prompts"].unique():
             for group in df_new["Group"].unique():
                 for paraphrasing_model in df_new["Paraphrasing model"].unique():
@@ -217,24 +212,28 @@ if __name__ == "__main__":
                         corr_holistic_bold_max, corr_honest_holistic_max, corr_honest_bold_max=[-99,0],[-99,0],[-99,0]
                         corr_holistic_bold_min, corr_honest_holistic_min, corr_honest_bold_min=[99,0],[99,0],[99,0]
                         corr_holistic_bold_sum, corr_honest_holistic_sum, corr_honest_bold_sum=0,0,0
-                        for sample_num in df_new["Sample number"].unique():
-                            
-                            my_df=df_new[(df_new["Num prompts"]==num)&(df_new["Group"]==group)&(df_new["Paraphrasing model"]==paraphrasing_model)&(df_new["Replacement"]==replacement)&(df_new["Sample number"]==sample_num)]
+                        num_samples=0
+                        sample_max_corr_holistic_bold,sample_max_corr_honest_holistic,sample_max_corr_honest_bold=-9,-9,-9
+                        my_df_current=df_new[(df_new["Num prompts"]==num)&(df_new["Group"]==group)&(df_new["Paraphrasing model"]==paraphrasing_model)&(df_new["Replacement"]==replacement)]
+                        print(group, my_df_current["Group"].unique())
+                        for sample_num in my_df_current["Sample number"].unique():
+
+                            my_df=my_df_current[(my_df_current["Sample number"]==sample_num)]
                             if (len(my_df['Holistic bias'])<2) or (len(my_df['BOLD bias'])<2) or (len(my_df['HONEST hurtfulness'])<2) or (len(my_df['HONEST bias'])<2):
                                 continue
-                            # print(my_df, len(my_df['Holistic bias']), len(my_df['BOLD bias']), len(my_df['HONEST hurtfulness']), len(my_df['HONEST bias']))
+                            num_samples+=1
                             corr_holistic_bold=pearsonr(my_df['Holistic bias'], my_df['BOLD bias'])
-                            corr_honest_holistic=pearsonr(my_df['HONEST hurtfulness'], my_df['Holistic bias'])
-                            corr_honest_bold=pearsonr(my_df['HONEST hurtfulness'], my_df['BOLD bias'])
+                            corr_honest_holistic=pearsonr(my_df['HONEST bias'], my_df['Holistic bias'])
+                            corr_honest_bold=pearsonr(my_df['HONEST bias'], my_df['BOLD bias'])
 
                             corr_holistic_bold_sum+=corr_holistic_bold[0]
                             corr_honest_holistic_sum+=corr_honest_holistic[0]
                             corr_honest_bold_sum+=corr_honest_bold[0]
 
-                            # print(num, replacement, sample_num,corr_honest_bold[0],corr_holistic_bold_min[0])
-
                             if corr_holistic_bold[0]>corr_holistic_bold_max[0]:
                                 corr_holistic_bold_max=corr_holistic_bold
+                                sample_max_corr_holistic_bold=sample_num
+                                my_df_2=my_df.copy()
 
                             if corr_holistic_bold[0]<corr_holistic_bold_min[0]:
                                 corr_holistic_bold_min=corr_holistic_bold
@@ -243,6 +242,8 @@ if __name__ == "__main__":
 
                             if corr_honest_holistic[0]>corr_honest_holistic_max[0]:
                                 corr_honest_holistic_max=corr_honest_holistic
+                                sample_max_corr_honest_holistic=sample_num
+                                my_df_2=my_df.copy()
 
                             if corr_honest_holistic[0]<corr_honest_holistic_min[0]:
                                 corr_honest_holistic_min=corr_honest_holistic
@@ -251,39 +252,24 @@ if __name__ == "__main__":
 
                             if corr_honest_bold[0]>corr_honest_bold_max[0]:
                                 corr_honest_bold_max=corr_honest_bold
+                                sample_max_corr_honest_bold=sample_num
+                                my_df_2=my_df.copy()
 
                             if corr_honest_bold[0]<corr_honest_bold_min[0]:
                                 corr_honest_bold_min=corr_honest_bold
 
                     #########################
-                        # df_new_3 = df_new_3.append({'Num prompts': num,'Replacement': replacement,'Type':'Average','Correlation': (corr_holistic_bold[0]+corr_honest_holistic[0]+corr_honest_bold[0])/3}, ignore_index = True)
-                        # print(corr_honest_bold_min)
-                        df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Oracle','Type':'Holistic-BOLD','Correlation': corr_holistic_bold_max[0],'P-value': corr_holistic_bold_max[1]}, ignore_index = True)
-                        df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Oracle','Type':'HONEST-Holistic','Correlation': corr_honest_holistic_max[0],'P-value': corr_honest_holistic_max[1]}, ignore_index = True)
-                        df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Oracle','Type':'HONEST-BOLD','Correlation': corr_honest_bold_max[0],'P-value': corr_honest_bold_max[1]}, ignore_index = True)
-                        df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Oracle','Type':'Average correlation','Correlation': 1/3*(corr_holistic_bold_max[0]+corr_honest_holistic_max[0]+corr_honest_bold_max[0]),'P-value': 1/3*(corr_holistic_bold_max[1]+corr_honest_holistic_max[1]+corr_honest_bold_max[1])}, ignore_index = True)
+                        if num_samples>0:
+                            print(num_samples, paraphrasing_model, corr_holistic_bold_sum,corr_honest_holistic_sum,corr_honest_bold_sum)
+                            models_list=list(my_df_2.Model)
+                            df_correlation = df_correlation.append({"Model": model,"Holistic bias":my_df_2[my_df_2["Model"]==model]["Holistic bias"].item(),"HONEST bias":my_df_2[my_df_2["Model"]==model]["HONEST bias"].item(),"BOLD bias":my_df_2[my_df_2["Model"]==model]["BOLD bias"].item(),'Group':group,'Sample at highest correlation': sample_max_corr_holistic_bold, 'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Oracle','Type':'Holistic-BOLD','Correlation': corr_holistic_bold_max[0],'P-value': corr_holistic_bold_max[1]}, ignore_index = True)
+                            df_correlation = df_correlation.append({"Model": model,"Holistic bias":my_df_2[my_df_2["Model"]==model]["Holistic bias"].item(),"HONEST bias":my_df_2[my_df_2["Model"]==model]["HONEST bias"].item(),"BOLD bias":my_df_2[my_df_2["Model"]==model]["BOLD bias"].item(),'Group':group,'Sample at highest correlation': sample_max_corr_honest_holistic, 'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Oracle','Type':'HONEST-Holistic','Correlation': corr_honest_holistic_max[0],'P-value': corr_honest_holistic_max[1]}, ignore_index = True)
+                            df_correlation = df_correlation.append({"Model": model,"Holistic bias":my_df_2[my_df_2["Model"]==model]["Holistic bias"].item(),"HONEST bias":my_df_2[my_df_2["Model"]==model]["HONEST bias"].item(),"BOLD bias":my_df_2[my_df_2["Model"]==model]["BOLD bias"].item(),'Group':group,'Sample at highest correlation': sample_max_corr_honest_bold, 'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Oracle','Type':'HONEST-BOLD','Correlation': corr_honest_bold_max[0],'P-value': corr_honest_bold_max[1]}, ignore_index = True)
+
+                            df_correlation = df_correlation.append({"Model": model,"Holistic bias":my_df_2[my_df_2["Model"]==model]["Holistic bias"].item(),"HONEST bias":my_df_2[my_df_2["Model"]==model]["HONEST bias"].item(),"BOLD bias":my_df_2[my_df_2["Model"]==model]["BOLD bias"].item(),'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Average','Type':'Holistic-BOLD','Correlation':  corr_holistic_bold_sum/num_samples,'P-value': None}, ignore_index = True)
+                            df_correlation = df_correlation.append({"Model": model,"Holistic bias":my_df_2[my_df_2["Model"]==model]["Holistic bias"].item(),"HONEST bias":my_df_2[my_df_2["Model"]==model]["HONEST bias"].item(),"BOLD bias":my_df_2[my_df_2["Model"]==model]["BOLD bias"].item(),'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Average','Type':'HONEST-Holistic','Correlation':  corr_honest_holistic_sum/num_samples,'P-value': None}, ignore_index = True)
+                            df_correlation = df_correlation.append({"Model": model,"Holistic bias":my_df_2[my_df_2["Model"]==model]["Holistic bias"].item(),"HONEST bias":my_df_2[my_df_2["Model"]==model]["HONEST bias"].item(),"BOLD bias":my_df_2[my_df_2["Model"]==model]["BOLD bias"].item(),'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Average','Type':'HONEST-BOLD','Correlation':  corr_honest_bold_sum/num_samples,'P-value':None}, ignore_index = True)
 
 
-                        # df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Lowest corr','Type':'Holistic-BOLD','Correlation':  corr_holistic_bold_min[0],'P-value': corr_holistic_bold_min[1]}, ignore_index = True)
-                        # df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Lowest corr','Type':'HONEST-Holistic','Correlation':  corr_honest_holistic_min[0],'P-value': corr_honest_holistic_min[1]}, ignore_index = True)
-                        # df_new_3 = df_new_3.append({'Group':group, 'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Lowest corr','Type':'HONEST-BOLD','Correlation':  corr_honest_bold_min[0],'P-value': corr_honest_bold_min[1]}, ignore_index = True)
+        df_correlation.to_csv("./output/compute_correlation.csv",index=False,)
 
-                        # df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Random','Type':'Holistic-BOLD','Correlation':  corr_holistic_bold[0],'P-value': corr_holistic_bold[1]}, ignore_index = True)
-                        # df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Random','Type':'HONEST-Holistic','Correlation':  corr_honest_holistic[0],'P-value': corr_honest_holistic[1]}, ignore_index = True)
-                        # df_new_3 = df_new_3.append({'Group':group, 'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Random','Type':'HONEST-BOLD','Correlation':  corr_honest_bold[0],'P-value': corr_honest_bold[1]}, ignore_index = True)
-
-                        df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Average','Type':'Holistic-BOLD','Correlation':  corr_holistic_bold_sum/len(df_new["Sample number"].unique()),'P-value': None}, ignore_index = True)
-                        df_new_3 = df_new_3.append({'Group':group,'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Average','Type':'HONEST-Holistic','Correlation':  corr_honest_holistic_sum/len(df_new["Sample number"].unique()),'P-value': None}, ignore_index = True)
-                        df_new_3 = df_new_3.append({'Group':group, 'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Average','Type':'HONEST-BOLD','Correlation':  corr_honest_bold_sum/len(df_new["Sample number"].unique()),'P-value':None}, ignore_index = True)
-                        df_new_3 = df_new_3.append({'Group':group, 'Num prompts': num,'Paraphrasing model': paraphrasing_model,'Replacement': replacement,'Method':'Average','Type':'Average correlation','Correlation':  1/3*((corr_holistic_bold_sum/len(df_new["Sample number"].unique())) + (corr_honest_holistic_sum/len(df_new["Sample number"].unique())) + (corr_honest_bold_sum/len(df_new["Sample number"].unique()))),'P-value':None}, ignore_index = True)
-
-
-        print("--- %s seconds ---" % (time.time() - start_time))
-        print("Done")
-
-        df_new_3.to_csv(
-            "./output/"
-            + str(args.experiment)
-            + "_reproducibility_2.csv",
-            index=False,
-        ) 

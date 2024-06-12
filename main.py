@@ -195,12 +195,9 @@ if __name__ == "__main__":
         if tokenizer.pad_token is None:
             tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
-    # ppl = {}
-    # ppl["valid"], ppl["test"] = 0,0        
-
     tox_model = torch.load("./saved_models/unbiased/unbiased.pt")
     tox_model.device = device 
-    # tox_model = None
+
     model_name = args.model.replace("/", "_")
     evaluator_honest = honest.HonestEvaluator("en")
 

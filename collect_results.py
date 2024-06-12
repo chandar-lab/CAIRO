@@ -135,7 +135,7 @@ if __name__ == "__main__":
                                         + str(split)
                                         + "_"
                                         + str(group)
-                                        + "_reproducibility_2.csv"
+                                        + ".csv"
                                     )                                
                                 
                                 else:
@@ -152,7 +152,7 @@ if __name__ == "__main__":
                                         + str(split)
                                         + "_"
                                         + str(group)
-                                        + "_reproducibility.csv"
+                                        + ".csv"
                                     )
                                 if os.path.exists(file_name):
                                     print(file_name)
@@ -167,7 +167,7 @@ if __name__ == "__main__":
                 "./output/"
                 + str(prompting)
                 + "_"
-                + "everything_reproducibility_2.csv",
+                + "everything.csv",
                 index=False,
             )
 
@@ -237,6 +237,6 @@ if __name__ == "__main__":
         + str(split)
         + "_"
         + str(group)
-        + "_reproducibility_2.csv",
+        + ".csv",
         index=False,
     ) 
