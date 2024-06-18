@@ -12,12 +12,10 @@ Please follow the instructions in our [tutorial](https://colab.research.google.c
 
 ## Citation
 ```
-@inproceedings{
-mordido2024lookbehindsam,
-title={Why Don’t Prompt-Based Fairness Metrics Correlate?},
-author={Zayed, Abdelrahman and Mordido, Gon{\c{c}}alo and Baldini, Ioana and Chandar, Sarath},
-booktitle={Forty-first International Conference on Machine Learning},
-year={2024},
-url={https://openreview.net/forum?id=zuQLrT2EzZ}
+@article{zayed2024don,
+  title={Why Don't Prompt-Based Fairness Metrics Correlate?},
+  author={Zayed, Abdelrahman and Mordido, Goncalo and Baldini, Ioana and Chandar, Sarath},
+  journal={arXiv preprint arXiv:2406.05918},
+  year={2024}
 }
 ```
