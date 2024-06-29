@@ -8,7 +8,7 @@ This is the official repository for [Why Don’t Prompt-Based Fairness Metrics C
 </div>
 
 ## Usage
-Please follow the instructions in our [tutorial]https://colab.research.google.com/drive/1wUJhuPR1PKu-BcxP2Lx_9dfzffCQ3-kE?usp=sharing)
+Please follow the instructions in our [tutorial](https://colab.research.google.com/drive/1wUJhuPR1PKu-BcxP2Lx_9dfzffCQ3-kE?usp=sharing)
 
 ## Citation
 ```
