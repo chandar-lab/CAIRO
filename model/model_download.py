@@ -10,7 +10,7 @@ for model_name in ["EleutherAI/gpt-neo-1.3B", "EleutherAI/gpt-neo-2.7B","gpt2","
         
     elif model_name in ["EleutherAI/gpt-neo-125M", "EleutherAI/gpt-neo-1.3B", "EleutherAI/gpt-neo-2.7B"]:
         model = GPTNeoForCausalLM.from_pretrained(model_name).to(device)
-        tokenizer = GPT2Tokenizer.from_pretrained("saved_models/cached_tokenizers/" + model_name, padding_side="left")
+        tokenizer = GPT2Tokenizer.from_pretrained(model_name, padding_side="left")
 
     elif model_name in ["EleutherAI/gpt-j-6B"]:
         model =  GPTJForCausalLM.from_pretrained(model_name,revision="float16", torch_dtype=torch.float16,).to(device)

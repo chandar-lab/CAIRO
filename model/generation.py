@@ -60,9 +60,6 @@ def process_prompts(seed, model_name, model, tokenizer, tox_model, evaluator_hon
                             "Perplexity prompts": ppl[title + "_" + split],
                             "split": split,
                         }
-                        # for gen, prompt_text in zip(
-                        #     generations, prompts
-                        # )
                         for gen, prompt_text, tox_score in zip(
                             generations, prompts, toxicity_scores
                         )
@@ -85,7 +82,7 @@ def process_prompts(seed, model_name, model, tokenizer, tox_model, evaluator_hon
 
         full_results_pd=pd.concat([full_results_pd, honest_results], axis=1)
     
-    full_results_pd.to_csv(output_dir + model_name + "_" + targeted_bias + "_" + paraphrase_model + "_reproducibility.csv",index=False,)
+    full_results_pd.to_csv(output_dir + model_name + "_" + targeted_bias + "_" + paraphrase_model + ".csv",index=False,)
     
     
 def gen_prompt(
@@ -123,7 +120,7 @@ def gen_prompt(
                 output_sequences, skip_special_tokens=True
             )
             print(decoded_sequences)
-            # toxicity_scores += tox_model.predict([x.replace("\n", " ").lower() for x in decoded_sequences])["toxicity"]
+            toxicity_scores += tox_model.predict([x.replace("\n", " ").lower() for x in decoded_sequences])["toxicity"]
             outputs += decoded_sequences
             # break
     return outputs, toxicity_scores

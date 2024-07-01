@@ -20,8 +20,8 @@ def parse_args():
             "Llama",
             "Chatgpt_Llama_Mistral",
         ],
-        default=None,
-        help="The model used to generate the paraphrases",
+        default="Chatgpt_Llama_Mistral",
+        help="The model used to generate the paraphrases. If not specified, it ",
     ) 
     parser.add_argument(
         "--experiment",

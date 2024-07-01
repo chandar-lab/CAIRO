@@ -3,9 +3,7 @@ import json
 from argparse import ArgumentParser
 from pathlib import Path
 from model.generation import process_prompts,compute_ppl
-# from transformers import LlamaForCausalLM, MixtralForCausalLM, LlamaTokenizer
-from transformers import AutoTokenizer, BloomTokenizerFast, GPT2Tokenizer
-from transformers import AutoModelForCausalLM, BloomForCausalLM, GPTNeoForCausalLM, GPTNeoXForCausalLM, OPTForCausalLM, GPTJForCausalLM, AutoModelForCausalLM, AutoModelWithLMHead
+from model.model_load import load_model_and_tokenizer
 import pandas as pd
 from honest import honest
 
@@ -147,47 +145,9 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-
     torch.manual_seed(args.seed)
-
     path_to_prompts= "./prompts/" + str(args.prompting) + "/"
-
-    tokenizer, model = None, None # these models are too big to be saved and loaded, so we use api calls to interact with them
-
-    if args.model in ["gpt2", "gpt2-medium", "gpt2-large", "distilgpt2",  "gpt2-xl"]:
-        model = AutoModelWithLMHead.from_pretrained("./saved_models/cached_models/" + args.model).to(device)
-
-    elif args.model in ["EleutherAI/gpt-neo-125M", "EleutherAI/gpt-neo-1.3B", "EleutherAI/gpt-neo-2.7B"]:
-        model = GPTNeoForCausalLM.from_pretrained("./saved_models/cached_models/" + args.model).to(device)
-
-    elif args.model in ["EleutherAI/gpt-j-6B"]:
-        model = GPTJForCausalLM.from_pretrained("./saved_models/cached_models/" + args.model).to(device)
-
-    elif args.model in ["facebook/opt-350m", "facebook/opt-1.3b", "facebook/opt-2.7b", "facebook/opt-6.7b"]:
-        model = OPTForCausalLM.from_pretrained("./saved_models/cached_models/" + args.model).to(device)
-
-    elif args.model in ["bigscience/bloom-560m", "bigscience/bloom-1b1","bigscience/bloom-3b", "bigscience/bloom-7b1"]:
-        model = BloomForCausalLM.from_pretrained("./saved_models/cached_models/" + args.model).to(device)
-
-    elif args.model in ["EleutherAI/pythia-70m","EleutherAI/pythia-160m","EleutherAI/pythia-410m","EleutherAI/pythia-1b","EleutherAI/pythia-1.4b","EleutherAI/pythia-2.8b","EleutherAI/pythia-6.9b","EleutherAI/pythia-12b"]:
-        model = GPTNeoXForCausalLM.from_pretrained("./saved_models/cached_models/" + args.model).to(device)
-
-    elif args.model in ["meta-llama/Llama-2-7b-chat-hf"]:
-        model = LlamaForCausalLM.from_pretrained("./saved_models/cached_models/" + args.model, device_map="auto", load_in_4bit=True, revision="float16",torch_dtype=torch.float16,
-                                                token= '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').bfloat16()
-
-    elif args.model in ['mistralai/Mistral-7B-Instruct-v0.2']:
-        model = AutoModelForCausalLM.from_pretrained("./saved_models/cached_models/" + args.model, device_map="auto", load_in_4bit=True, revision="float16",torch_dtype=torch.float16).bfloat16()
-
-    if args.model in ["EleutherAI/gpt-neo-125M", "EleutherAI/gpt-neo-1.3B", "EleutherAI/gpt-neo-2.7B"]:
-        tokenizer = GPT2Tokenizer.from_pretrained("./saved_models/cached_tokenizers/" + args.model, padding_side="left") # Initialize tokenizer for generation to the left
-    
-    elif args.model in ["bigscience/bloom-560m", "bigscience/bloom-1b1","bigscience/bloom-3b", "bigscience/bloom-7b1"]:
-        tokenizer = BloomTokenizerFast.from_pretrained("./saved_models/cached_tokenizers/" + args.model, padding_side="left") 
-
-    elif args.model in ["mistralai/Mistral-7B-Instruct-v0.2", "meta-llama/Llama-2-7b-chat-hf", "facebook/opt-350m", "facebook/opt-1.3b", "facebook/opt-2.7b", "facebook/opt-6.7b","EleutherAI/pythia-70m","EleutherAI/pythia-160m","EleutherAI/pythia-410m","EleutherAI/pythia-1b","EleutherAI/pythia-1.4b","EleutherAI/pythia-2.8b","EleutherAI/pythia-6.9b","EleutherAI/pythia-12b", "gpt2","gpt2-medium","gpt2-large","gpt2-xl","distilgpt2", "EleutherAI/gpt-j-6B"]:
-        tokenizer = AutoTokenizer.from_pretrained("./saved_models/cached_tokenizers/" + args.model, load_in_4bit=True, padding_side="left")
-
+    model, tokenizer = load_model_and_tokenizer(args.model, device)
     splits = ["valid","test"]
 
     if tokenizer!= None:
@@ -197,7 +157,6 @@ if __name__ == "__main__":
 
     tox_model = torch.load("./saved_models/unbiased/unbiased.pt")
     tox_model.device = device 
-
     model_name = args.model.replace("/", "_")
     evaluator_honest = honest.HonestEvaluator("en")
 
