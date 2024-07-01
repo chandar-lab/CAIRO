@@ -147,7 +147,7 @@ if __name__ == "__main__":
     args = parse_args()
     torch.manual_seed(args.seed)
     path_to_prompts= "./prompts/" + str(args.prompting) + "/"
-    tokenizer, model = load_model_and_tokenizer(args.model, device)
+    model, tokenizer = load_model_and_tokenizer(args.model, device)
     splits = ["valid","test"]
 
     if tokenizer!= None:
