@@ -75,7 +75,6 @@ if __name__ == "__main__":
                 )
                 print(file_name)
                 if os.path.exists(file_name):
-                    print("Adeene geet")
                     df_current = pd.read_csv(file_name,lineterminator='\n', error_bad_lines=False)  
                     df=pd.concat([df, df_current], ignore_index=True)
 
@@ -84,7 +83,6 @@ if __name__ == "__main__":
             df["Group"].replace({"nationality": "Nationality", "sexual_orientation": "Sexual-orientation", "gender_and_sex": "Gender", "religion": "Religion", "religious_ideology": "Religion", "race_ethnicity": "Race", "race": "Race","gender": "Gender"}, inplace=True)
             sns.set(font_scale = 1.5)
 
-            # df=df[(df["Model"]==args.model_list[0].replace("/", "_"))& (df["Replacement"]==True) & (df["Paraphrasing model"]==args.paraphrasing_model) & (df["Group"]==args.group_list[0]) & (df["Split"]==args.split_list[0])].drop(['prompt list'], axis=1)
             df=df[(df["Model"]==args.model_list[0].replace("/", "_"))& (df["Replacement"]==True) & (df["Paraphrasing model"]==args.paraphrasing_model) & (df["Group"]==args.group_list[0]) & (df["Split"]==args.split_list[0])]
             print(df)
             df["BOLD bias"]=None
