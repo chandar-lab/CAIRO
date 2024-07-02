@@ -4,7 +4,7 @@ This is the official repository for [Why Don’t Prompt-Based Fairness Metrics C
 
 **Summary (short version)**: We explain why fairness metrics don't correlate and propose CAIRO to make them correlate. 
 
-**Summary (longer version)**: Prompt-based bias metrics don't correlate because prompting is unreliable in assessing the model's knowledge. In addition, metrics differ in how they define and quantify bias. For example, according to one metric, race bias could refer to the deviation in the model's toxicity when prompted with sentences about black and white people, while another metric could measure the difference in the model's sentiment when prompted with sentences about Asian and Middle Eastern people. CAIRO fixes the inconsistencies within these metrics.
+**Summary (longer version)**: Prompt-based bias metrics don't correlate because prompting is unreliable in assessing the model's knowledge. In addition, metrics differ in how they define and quantify bias. For example, according to one metric, race bias could refer to the deviation in the model's toxicity when prompted with sentences about black and white people, while another metric could measure the difference in sentiment when prompted with sentences about Asian and Middle Eastern people. CAIRO fixes the inconsistencies within these metrics.
 
 <div style="text-align: center">
 <img src="CAIRO.png" width="700">
