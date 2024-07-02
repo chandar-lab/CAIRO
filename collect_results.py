@@ -34,12 +34,9 @@ def parse_args():
         help="The experiment that we want to run",
     )                        
     parser.add_argument(
-        "--account",
-        choices=[
-            "abdel1", "olewicki"
-        ],
-        default="abdel1",
-        help="The Compute Canada account that we work on",
+        "--directory",
+        default="/content/drive/MyDrive/PhD/reproducibility/CAIRO_github/CAIRO-experiment/",
+        help="The directory where the files are stored",
     )
     parser.add_argument(
         "--unify_subgroups",
@@ -109,14 +106,16 @@ if __name__ == "__main__":
                             'prompts_meta-llama_Llama-2-7b-chat-hf_1','prompts_meta-llama_Llama-2-7b-chat-hf_2','prompts_meta-llama_Llama-2-7b-chat-hf_3','prompts_meta-llama_Llama-2-7b-chat-hf_4','prompts_meta-llama_Llama-2-7b-chat-hf_5']
 
     if args.experiment == "collect_all_csv_files":
-        for prompting in args.prompting_list:  
-            for experiment in ["robustness_effect", "data_augmentation_effect"]:
-                for model_name in args.model_list:
-                    for split in ["valid", "test"]:
-                        for group in ["race_ethnicity", "religion", "gender_and_sex","gender","race","religious_ideology"]: 
-                            for paraphrasing_model in ["Chatgpt", "Mistral", "Llama","Chatgpt_Llama_Mistral", "None"]:
+        for prompting, experiment, model_name, split, group, paraphrasing_model in itertools.product(args.prompting_list, ["robustness_effect", "data_augmentation_effect"], args.model_list, ["valid", "test"], ["race_ethnicity", "religion", "gender_and_sex","gender","race","religious_ideology"], ["Chatgpt", "Mistral", "Llama","Chatgpt_Llama_Mistral", "None"]):
+        # for prompting in args.prompting_list:  
+        #     for experiment in ["robustness_effect", "data_augmentation_effect"]:
+        #         for model_name in args.model_list:
+        #             for split in ["valid", "test"]:
+        #                 for group in ["race_ethnicity", "religion", "gender_and_sex","gender","race","religious_ideology"]: 
+        #                     for paraphrasing_model in ["Chatgpt", "Mistral", "Llama","Chatgpt_Llama_Mistral", "None"]:
                                 csv_directory = (
-                                    "/scratch/" + args.account + "/bias_metrics/holistic_bias/seed_1"
+                                    args.directory
+                                    + "seed_1"
                                     + "/output/"
                                     + "/"                   
                                 ) 
@@ -171,15 +170,17 @@ if __name__ == "__main__":
                 index=False,
             )
 
-    for prompting in args.prompting_list:
-        for model_name in args.model_list:
-            for split in args.split_list:
-                for seed in seeds:
+    for prompting, model_name, split, group, seed in itertools.product(args.prompting_list, args.model_list, args.split_list, args.group_list, seeds):
+    # for prompting in args.prompting_list:
+    #     for model_name in args.model_list:
+    #         for split in args.split_list:
+    #             for seed in seeds:
                     for group in args.group_list:
                         df_all_prompts_models=pd.DataFrame()
                         for prompting_model in prompting_models:
                             csv_directory = (
-                                "/scratch/" + args.account + "/bias_metrics/holistic_bias/seed_"
+                                args.directory
+                                +"seed_"
                                 + str(seed)
                                 + "/output/"
                                 + str(prompting)
