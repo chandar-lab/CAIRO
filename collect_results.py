@@ -165,58 +165,53 @@ if __name__ == "__main__":
             )
 
     for prompting, model_name, split, seed, group in itertools.product(args.prompting_list, args.model_list, args.split_list, seeds, args.group_list):
-    # for prompting in args.prompting_list:
-    #     for model_name in args.model_list:
-    #         for split in args.split_list:
-    #             for seed in seeds:
-    #                for group in args.group_list:
-                        df_all_prompts_models=pd.DataFrame()
-                        for prompting_model in prompting_models:
-                            csv_directory = (
-                                args.directory
-                                +"seed_"
-                                + str(seed)
-                                + "/output/"
-                                + str(prompting)
-                                + "_" + str(split)  
-                                + "/"                   
-                            ) 
-                            file_name = (
-                                csv_directory
-                                + model_name.replace("/", "_")
-                                + "_"
-                                + str(group)
-                                + "_"
-                                + str(prompting_model)
-                                + ".csv"
-                            )  
-                            print(file_name)   
-                            if os.path.exists(file_name):
-                                print(prompting,model_name,split,seed,group,prompting_model)
-                                if os.stat(file_name).st_size < 10000:
-                                    continue
-                                df = pd.read_csv(file_name,lineterminator='\n', error_bad_lines=False)  
-                                df = df.drop(df[(df["title"] == "prompts_gpt-35-turbo-16k_10")].index)
+        df_all_prompts_models=pd.DataFrame()
+        for prompting_model in prompting_models:
+            csv_directory = (
+                args.directory
+                +"seed_"
+                + str(seed)
+                + "/output/"
+                + str(prompting)
+                + "_" + str(split)  
+                + "/"                   
+            ) 
+            file_name = (
+                csv_directory
+                + model_name.replace("/", "_")
+                + "_"
+                + str(group)
+                + "_"
+                + str(prompting_model)
+                + ".csv"
+            )  
+            print(file_name)   
+            if os.path.exists(file_name):
+                print(prompting,model_name,split,seed,group,prompting_model)
+                if os.stat(file_name).st_size < 10000:
+                    continue
+                df = pd.read_csv(file_name,lineterminator='\n', error_bad_lines=False)  
+                df = df.drop(df[(df["title"] == "prompts_gpt-35-turbo-16k_10")].index)
 
-                                if prompting == "holistic" and args.unify_subgroups:
-                                    if group == "gender_and_sex":
-                                        df=df.drop(df[(df["subgroup"] != "queer")&(df["subgroup"] != "binary")&(df["subgroup"] != "sex")&(df["subgroup"] != "descriptors")].index)
-                                    elif group == "religion":
-                                        print("before ", len(df))
-                                        df_filtered = pd.read_csv("./prompts/holistic/" + "filtered_religion_subgroups_" + split + ".csv")
-                                        df=df[~df_filtered["prompt"]]
-                                        print("after ", len(df))
+                if prompting == "holistic" and args.unify_subgroups:
+                    if group == "gender_and_sex":
+                        df=df.drop(df[(df["subgroup"] != "queer")&(df["subgroup"] != "binary")&(df["subgroup"] != "sex")&(df["subgroup"] != "descriptors")].index)
+                    elif group == "religion":
+                        print("before ", len(df))
+                        df_filtered = pd.read_csv("./prompts/holistic/" + "filtered_religion_subgroups_" + split + ".csv")
+                        df=df[~df_filtered["prompt"]]
+                        print("after ", len(df))
 
-                                df_all_prompts_models=pd.concat([df_all_prompts_models, df], ignore_index=True)
-                                if args.experiment == "robustness_effect":
-                                    df_all_seeds = df_all_seeds.append({'Group': group,'Hurtfulness': df["honest_score"].mean() if prompting == "HONEST" else None, 'Bias': compute_bias(df, group), 
-                                                                        'Prompting': prompting, 'Prompt': prompting_model,'Group': group,'Model': model_name.replace("/", "_"), 'Unify subgroups': args.unify_subgroups,
-                                                                        'Seed': seed, 'Data augmentation': False, 'Split': split}, ignore_index = True)     
-                                    print("--- %s seconds ---" % (time.time() - start_time))
+                df_all_prompts_models=pd.concat([df_all_prompts_models, df], ignore_index=True)
+                if args.experiment == "robustness_effect":
+                    df_all_seeds = df_all_seeds.append({'Group': group,'Hurtfulness': df["honest_score"].mean() if prompting == "HONEST" else None, 'Bias': compute_bias(df, group), 
+                                                        'Prompting': prompting, 'Prompt': prompting_model,'Group': group,'Model': model_name.replace("/", "_"), 'Unify subgroups': args.unify_subgroups,
+                                                        'Seed': seed, 'Data augmentation': False, 'Split': split}, ignore_index = True)     
+                    print("--- %s seconds ---" % (time.time() - start_time))
 
-                        if args.experiment == "data_augmentation_effect":
-                                            df_all_seeds=data_augmentation_effect(df_all_prompts_models, df_all_seeds, args.paraphrasing_model, prompting, model_name, split, seed, group)
-                                            print("--- %s seconds ---" % (time.time() - start_time))
+        if args.experiment == "data_augmentation_effect":
+                            df_all_seeds=data_augmentation_effect(df_all_prompts_models, df_all_seeds, args.paraphrasing_model, prompting, model_name, split, seed, group)
+                            print("--- %s seconds ---" % (time.time() - start_time))
 
     print(df_all_seeds)
     df_all_seeds.to_csv(
