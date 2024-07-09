@@ -103,42 +103,37 @@ if __name__ == "__main__":
 
             df_new = pd.DataFrame()
             for num, model, replacement, split, paraphrasing_model in itertools.product(df["Num prompts"].unique(), df["Model"].unique(), df["Replacement"].unique(), df["Split"].unique(), df["Paraphrasing model"].unique()):
-            # for num in df["Num prompts"].unique():
-            #     for model in df["Model"].unique():
-            #         for replacement in df["Replacement"].unique():
-            #             for split in df["Split"].unique():
-            #                 for paraphrasing_model in df["Paraphrasing model"].unique():
-                                my_df=df[(df["Num prompts"]==num)&(df["Replacement"]==replacement)&(df["Paraphrasing model"]==paraphrasing_model) &(df["Model"]==model) & (df["Split"]==split)]
-                                for sample_num in my_df["Sample number"].unique():
-                                    my_df=df[(df["Sample number"]==sample_num)]
-                                    if math.isnan(num):
-                                        continue
-                                    print({'Num prompts': num,'Model': model,'Group':'Gender','Paraphrasing model':paraphrasing_model,
-                                                            'Replacement': replacement,'Sample number': sample_num,
-                                                            'Holistic bias': my_df[my_df["Group"]=="Gender"]["Holistic bias"].mean(),
-                                                            'HONEST hurtfulness': my_df[my_df["Group"]=="Gender"]["HONEST hurtfulness"].mean(),
-                                                            'HONEST bias': my_df[my_df["Group"]=="Gender"]["HONEST bias"].mean(),'Split': split,
-                                                            'BOLD bias': my_df[my_df["Group"]=="Gender"]["BOLD bias"].mean()})
-                                    df_new = df_new.append({'Num prompts': num,'Model': model,'Group':'Gender','Paraphrasing model':paraphrasing_model,
-                                                            'Replacement': replacement,'Sample number': sample_num,
-                                                            'Holistic bias': my_df[my_df["Group"]=="Gender"]["Holistic bias"].mean(),
-                                                            'HONEST hurtfulness': my_df[my_df["Group"]=="Gender"]["HONEST hurtfulness"].mean(),
-                                                            'HONEST bias': my_df[my_df["Group"]=="Gender"]["HONEST bias"].mean(),'Split': split,
-                                                            'BOLD bias': my_df[my_df["Group"]=="Gender"]["BOLD bias"].mean()}, ignore_index = True)
+                my_df=df[(df["Num prompts"]==num)&(df["Replacement"]==replacement)&(df["Paraphrasing model"]==paraphrasing_model) &(df["Model"]==model) & (df["Split"]==split)]
+                for sample_num in my_df["Sample number"].unique():
+                    my_df=df[(df["Sample number"]==sample_num)]
+                    if math.isnan(num):
+                        continue
+                    print({'Num prompts': num,'Model': model,'Group':'Gender','Paraphrasing model':paraphrasing_model,
+                                            'Replacement': replacement,'Sample number': sample_num,
+                                            'Holistic bias': my_df[my_df["Group"]=="Gender"]["Holistic bias"].mean(),
+                                            'HONEST hurtfulness': my_df[my_df["Group"]=="Gender"]["HONEST hurtfulness"].mean(),
+                                            'HONEST bias': my_df[my_df["Group"]=="Gender"]["HONEST bias"].mean(),'Split': split,
+                                            'BOLD bias': my_df[my_df["Group"]=="Gender"]["BOLD bias"].mean()})
+                    df_new = df_new.append({'Num prompts': num,'Model': model,'Group':'Gender','Paraphrasing model':paraphrasing_model,
+                                            'Replacement': replacement,'Sample number': sample_num,
+                                            'Holistic bias': my_df[my_df["Group"]=="Gender"]["Holistic bias"].mean(),
+                                            'HONEST hurtfulness': my_df[my_df["Group"]=="Gender"]["HONEST hurtfulness"].mean(),
+                                            'HONEST bias': my_df[my_df["Group"]=="Gender"]["HONEST bias"].mean(),'Split': split,
+                                            'BOLD bias': my_df[my_df["Group"]=="Gender"]["BOLD bias"].mean()}, ignore_index = True)
 
-                                    df_new = df_new.append({'Num prompts': num,'Model': model,'Group':'Religion','Paraphrasing model':paraphrasing_model,
-                                                            'Replacement': replacement,'Sample number': sample_num,
-                                                            'Holistic bias': my_df[my_df["Group"]=="Religion"]["Holistic bias"].mean(),
-                                                            'HONEST hurtfulness': 0,
-                                                            'HONEST bias': 0 ,'Split': split,
-                                                            'BOLD bias': my_df[my_df["Group"]=="Religion"]["BOLD bias"].mean()}, ignore_index = True)
+                    df_new = df_new.append({'Num prompts': num,'Model': model,'Group':'Religion','Paraphrasing model':paraphrasing_model,
+                                            'Replacement': replacement,'Sample number': sample_num,
+                                            'Holistic bias': my_df[my_df["Group"]=="Religion"]["Holistic bias"].mean(),
+                                            'HONEST hurtfulness': 0,
+                                            'HONEST bias': 0 ,'Split': split,
+                                            'BOLD bias': my_df[my_df["Group"]=="Religion"]["BOLD bias"].mean()}, ignore_index = True)
 
-                                    df_new = df_new.append({'Num prompts': num,'Model': model,'Group':'Race','Paraphrasing model':paraphrasing_model,
-                                                            'Replacement': replacement,'Sample number': sample_num,
-                                                            'Holistic bias': my_df[my_df["Group"]=="Race"]["Holistic bias"].mean(),
-                                                            'HONEST hurtfulness': 0,
-                                                            'HONEST bias': 0,'Split': split,
-                                                            'BOLD bias': my_df[my_df["Group"]=="Race"]["BOLD bias"].mean()}, ignore_index = True)
+                    df_new = df_new.append({'Num prompts': num,'Model': model,'Group':'Race','Paraphrasing model':paraphrasing_model,
+                                            'Replacement': replacement,'Sample number': sample_num,
+                                            'Holistic bias': my_df[my_df["Group"]=="Race"]["Holistic bias"].mean(),
+                                            'HONEST hurtfulness': 0,
+                                            'HONEST bias': 0,'Split': split,
+                                            'BOLD bias': my_df[my_df["Group"]=="Race"]["BOLD bias"].mean()}, ignore_index = True)
 
 
 
