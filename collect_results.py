@@ -107,60 +107,54 @@ if __name__ == "__main__":
 
     if args.experiment == "collect_all_csv_files":
         for prompting, experiment, model_name, split, group, paraphrasing_model in itertools.product(args.prompting_list, ["robustness_effect", "data_augmentation_effect"], args.model_list, ["valid", "test"], ["race_ethnicity", "religion", "gender_and_sex","gender","race","religious_ideology"], ["Chatgpt", "Mistral", "Llama","Chatgpt_Llama_Mistral", "None"]):
-        # for prompting in args.prompting_list:  
-        #     for experiment in ["robustness_effect", "data_augmentation_effect"]:
-        #         for model_name in args.model_list:
-        #             for split in ["valid", "test"]:
-        #                 for group in ["race_ethnicity", "religion", "gender_and_sex","gender","race","religious_ideology"]: 
-        #                     for paraphrasing_model in ["Chatgpt", "Mistral", "Llama","Chatgpt_Llama_Mistral", "None"]:
-                                csv_directory = (
-                                    args.directory
-                                    + "seed_1"
-                                    + "/output/"
-                                    + "/"                   
-                                ) 
-                                if prompting == "holistic" and group in ["gender_and_sex", "religion"]:
+            csv_directory = (
+                args.directory
+                + "seed_1"
+                + "/output/"
+                + "/"                   
+            ) 
+            if prompting == "holistic" and group in ["gender_and_sex", "religion"]:
 
-                                    file_name = (
-                                        csv_directory
-                                        + str(prompting)
-                                        + "_"
-                                        + experiment
-                                        + "_"
-                                        + str(model_name).replace("/", "_")
-                                        + "_"
-                                        + str(paraphrasing_model)
-                                        + "_"
-                                        + str(split)
-                                        + "_"
-                                        + str(group)
-                                        + ".csv"
-                                    )                                
-                                
-                                else:
-                                    file_name = (
-                                        csv_directory
-                                        + str(prompting)
-                                        + "_"
-                                        + experiment
-                                        + "_"
-                                        + str(model_name).replace("/", "_")
-                                        + "_"
-                                        + str(paraphrasing_model)
-                                        + "_"
-                                        + str(split)
-                                        + "_"
-                                        + str(group)
-                                        + ".csv"
-                                    )
-                                if os.path.exists(file_name):
-                                    print(file_name)
-                                    if os.stat(file_name).st_size < 10:
-                                        continue
-                                    df = pd.read_csv(file_name,lineterminator='\n', error_bad_lines=False)
-                                    if 'prompt list' in df.columns:
-                                        df=df.drop(['prompt list'], axis=1) 
-                                    df_all_seeds=pd.concat([df_all_seeds, df], ignore_index=True)
+                file_name = (
+                    csv_directory
+                    + str(prompting)
+                    + "_"
+                    + experiment
+                    + "_"
+                    + str(model_name).replace("/", "_")
+                    + "_"
+                    + str(paraphrasing_model)
+                    + "_"
+                    + str(split)
+                    + "_"
+                    + str(group)
+                    + ".csv"
+                )                                
+            
+            else:
+                file_name = (
+                    csv_directory
+                    + str(prompting)
+                    + "_"
+                    + experiment
+                    + "_"
+                    + str(model_name).replace("/", "_")
+                    + "_"
+                    + str(paraphrasing_model)
+                    + "_"
+                    + str(split)
+                    + "_"
+                    + str(group)
+                    + ".csv"
+                )
+            if os.path.exists(file_name):
+                print(file_name)
+                if os.stat(file_name).st_size < 10:
+                    continue
+                df = pd.read_csv(file_name,lineterminator='\n', error_bad_lines=False)
+                if 'prompt list' in df.columns:
+                    df=df.drop(['prompt list'], axis=1) 
+                df_all_seeds=pd.concat([df_all_seeds, df], ignore_index=True)
 
             df_all_seeds.to_csv(
                 "./output/"
@@ -170,12 +164,12 @@ if __name__ == "__main__":
                 index=False,
             )
 
-    for prompting, model_name, split, group, seed in itertools.product(args.prompting_list, args.model_list, args.split_list, args.group_list, seeds):
+    for prompting, model_name, split, seed, group in itertools.product(args.prompting_list, args.model_list, args.split_list, seeds, args.group_list):
     # for prompting in args.prompting_list:
     #     for model_name in args.model_list:
     #         for split in args.split_list:
     #             for seed in seeds:
-                    for group in args.group_list:
+    #                for group in args.group_list:
                         df_all_prompts_models=pd.DataFrame()
                         for prompting_model in prompting_models:
                             csv_directory = (
