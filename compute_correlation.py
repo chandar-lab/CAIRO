@@ -37,7 +37,7 @@ def parse_args():
             "collect_all_paraphrasing_models",
         ],
         default="collect_all_paraphrasing_models",
-        help="The experiment that we want to run. The name collect_all_paraphrasing_models is a bit misleading, but changing it will require modifying all the sh files: It is used to compute the average biases aver the seeds. ",
+        help="The experiment that we want to run. The name collect_all_paraphrasing_models is a bit misleading, but changing it will require modifying all the sh files: It is used to compute the average biases aver the seeds.",
     )                  
     parser.add_argument(
         "--directory",
