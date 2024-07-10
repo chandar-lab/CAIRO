@@ -1,6 +1,6 @@
 # Why Don’t Prompt-Based Fairness Metrics Correlate? (ACL main 2024)
 
-This is the official repository for [Why Don’t Prompt-Based Fairness Metrics Correlate?](https://arxiv.org/abs/2307.16704), accepted at ACL main 2024. 
+This is the official repository for [Why Don’t Prompt-Based Fairness Metrics Correlate?](https://arxiv.org/abs/2406.05918), accepted at ACL main 2024. 
 
 **Summary (short version)**: We explain why fairness metrics don't correlate and propose CAIRO to make them correlate. 
 
