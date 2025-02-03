@@ -147,7 +147,7 @@ def compute_ppl(model, tokenizer, stride, max_position_embeddings, prompting, ta
         print(data)
         if data == "wikitext":
             names = []    
-            with open("./model/wikitext-2-raw-v1_" + split + ".txt", 'r') as fp:
+            with open("./model/wikitext-2-raw-v1_" + split + ".txt", 'r', encoding='utf-8') as fp:
                 for line in fp:
                     # remove linebreak from a current name
                     # linebreak is the last character of each line
@@ -155,7 +155,9 @@ def compute_ppl(model, tokenizer, stride, max_position_embeddings, prompting, ta
                     # add current item to the list
                     names.append(x)
         else:
-            names = json.load(open("./prompts/" + str(prompting) + "/" + prompting + "_" + split + "_prompts.json", "r"))[targeted_bias][data]
+            # names = json.load(open("./prompts/" + str(prompting) + "/" + prompting + "_" + split + "_prompts.json", "r"))[targeted_bias][data]
+            with open("./prompts/" + str(prompting) + "/" + prompting + "_" + split + "_prompts.json", 'r', encoding='utf-8') as fp:
+              names = json.load(fp)[targeted_bias][data]
 
         encodings = tokenizer("".join(names) , return_tensors="pt")
         seq_len = encodings.input_ids.size(1)
